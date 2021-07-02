@@ -15,7 +15,7 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const initialSupply = BigNumber.from('10000')
+  const _totalSupply = BigNumber.from('1000000000000000000000')
   var _name = "YuHu Token";
   var _symbol = "YHT";
 

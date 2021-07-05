@@ -26,6 +26,7 @@ describe("Token contract", function () {
   let addr1;
   let addr2;
   let addrs;
+  
   const initialSupply = BigNumber.from('10000')
   
   var name = "Yuhu Token";

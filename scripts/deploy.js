@@ -15,9 +15,9 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const _totalSupply = BigNumber.from('1000000000000000000000')
-  var _name = "YuHu Token";
-  var _symbol = "YHT";
+  const _totalSupply = BigNumber.from('10000000000000000000000000') //10 million tokens
+  var _name = "DApp Token";
+  var _symbol = "DApp";
 
   const MyToken = await hre.ethers.getContractFactory("MyToken");
   const myToken = await MyToken.deploy(_totalSupply, _name, _symbol);

@@ -6,16 +6,21 @@ import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol"
 contract TokenFarm {		
 	string public name = "Dapp Token Farm";
 	address public owner;
+	uint public APR = 50;
 	DappToken public dappToken;
-
 	address[] public stakers;
+	uint startBlock;
 	mapping(address => uint) public stakingBalance;
 	mapping(address => uint) public rewardsBalance;
 	mapping(address => bool) public hasStaked;
 	mapping(address => bool) public isStaking;
+	mapping(address => uint) public stakingTime;
+	mapping(address => uint) public withdrawTime;
 
-	constructor(DappToken _dappToken) public {
+
+	constructor(DappToken _dappToken, uint _startBlock) public {
 		dappToken = _dappToken;
+		startBlock = _startBlock;
 		owner = msg.sender;
 	}
 
@@ -67,12 +72,21 @@ contract TokenFarm {
 	from the app so give them interest using the app. */
 	function claimRewards() public {
 
-		// require(时间)
+    	require(block.number >= startBlock, "rewards claim have not been started yet");
 
 		uint balance = stakingBalance[msg.sender];
 		if(balance > 0) {
 			dappToken.transfer(msg.sender, balance);
-		}			
+		}
+	}
+
+	function getStakedBalance(address _staker) public view returns (uint){
+		return stakingBalance[_staker];
+		
+	}
+
+	function getBlockNumber() public view returns(uint) {
+		return block.number;
 	}
 }
 

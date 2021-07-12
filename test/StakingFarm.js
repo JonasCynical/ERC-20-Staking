@@ -253,6 +253,9 @@ describe("Farm contract", function () {
       await hardhatFarm.connect(addr1).stakeTokens(accountAmount);
       await hardhatFarm.connect(addr1).claimRewards();
       expect(await hardhatToken.balanceOf(addr1.address)).to.equal(accountAmount);
+
+      console.log((await hardhatFarm.getBlockNumber()).toString())
+
     });
   });
 });

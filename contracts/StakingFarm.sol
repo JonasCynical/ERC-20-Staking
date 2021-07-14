@@ -6,12 +6,15 @@ import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol"
 contract TokenFarm {		
 	string public name = "Dapp Token Farm";
 	address public owner;
-	uint public APR = 50;
 	DappToken public dappToken;
 	address[] public stakers;
-	uint startBlock;
+	uint public startBlock;
+	// uint public oneYear = 2356364
+	// for testing we use below
+	uint public oneYear = 1200;
 	mapping(address => uint) public stakingBalance;
 	mapping(address => uint) public rewardsBalance;
+	mapping(address => uint) public blockTime;
 	mapping(address => bool) public hasStaked;
 	mapping(address => bool) public isStaking;
 	mapping(address => uint) public stakingTime;
@@ -33,7 +36,23 @@ contract TokenFarm {
 		dappToken.transferFrom(msg.sender, address(this), _amount);
 
 		// update staking balance
-		stakingBalance[msg.sender] = stakingBalance[msg.sender] + _amount;		
+		stakingBalance[msg.sender] = stakingBalance[msg.sender] + _amount;
+
+		// update reward balance
+		if(rewardsBalance[msg.sender] == 0) {
+			uint balance = stakingBalance[msg.sender];
+			uint propotion = (block.number - startBlock)/4;
+			uint rewards = balance * propotion;
+			rewardsBalance[msg.sender] == rewards;
+			blockTime[msg.sender] == block.number;
+		}
+		else{
+			uint balance = stakingBalance[msg.sender];
+			uint propotion = (block.number - blockTime[msg.sender])/4;
+			uint rewards = balance * propotion;
+			rewardsBalance[msg.sender] == rewardsBalance[msg.sender] + rewards;
+			blockTime[msg.sender] == block.number;
+		}	
 
 		// add user to stakers array *only* if they haven't staked already
 		if(!hasStaked[msg.sender]) {
@@ -57,7 +76,7 @@ contract TokenFarm {
 		dappToken.transfer(msg.sender, _amount);
 
 		// reset staking balance
-		stakingBalance[msg.sender] = stakingBalance[msg.sender] - _amount;		
+		stakingBalance[msg.sender] = stakingBalance[msg.sender] - _amount;	
 
 		// update staking status
 
@@ -74,15 +93,17 @@ contract TokenFarm {
 
     	require(block.number >= startBlock, "rewards claim have not been started yet");
 
-		uint balance = stakingBalance[msg.sender];
-		if(balance > 0) {
-			dappToken.transfer(msg.sender, balance);
-		}
+		if(rewardsBalance[msg.sender] > 0) {
+			uint balance = stakingBalance[msg.sender];
+			uint propotion = (block.number - blockTime[msg.sender])/4;
+			uint rewards = balance * propotion;
+			rewardsBalance[msg.sender] == rewards;
+			blockTime[msg.sender] == block.number;
+		}	
 	}
 
 	function getStakedBalance(address _staker) public view returns (uint){
 		return stakingBalance[_staker];
-		
 	}
 
 	function getBlockNumber() public view returns(uint) {
